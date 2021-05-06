@@ -12,6 +12,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 
 /**
  * created by jg 2021/05/06
@@ -23,11 +24,9 @@ public class LoggingInterceptor implements HandlerInterceptor {
     private static final Logger LOG = LoggerFactory.getLogger(LoggingInterceptor.class);
 
     private final ObjectMapper objectMapper;
-    private final SlackSender slackSender;
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        //slackSender.sendSlack("RequestURL: " + request.getRequestURL().toString());
         if (request.getClass().getName().contains("SecurityContextHolderAwareRequestWrapper")) {
             return;
         }
@@ -35,14 +34,12 @@ public class LoggingInterceptor implements HandlerInterceptor {
         final ContentCachingResponseWrapper cachingResponse = (ContentCachingResponseWrapper) response;
         if (cachingRequest.getContentType() != null && cachingRequest.getContentType().contains("application/json")) {
             if (cachingRequest.getContentAsByteArray().length != 0) {
-                slackSender.sendSlack("RequestBody: " + objectMapper.writeValueAsString(objectMapper.readTree(cachingRequest.getContentAsByteArray())));
-                LOG.info("Request Body : {}", objectMapper.readTree(cachingRequest.getContentAsByteArray()));
+                LOG.error("Request Body : {}", objectMapper.readTree(cachingRequest.getContentAsByteArray()));
             }
         }
         if (cachingResponse.getContentType() != null && cachingResponse.getContentType().contains("application/json")) {
             if (cachingResponse.getContentAsByteArray().length != 0) {
-                slackSender.sendSlack("ResponseBody: " + objectMapper.writeValueAsString(objectMapper.readTree(cachingResponse.getContentAsByteArray())));
-                LOG.info("Response Body : {}", objectMapper.readTree(cachingResponse.getContentAsByteArray()));
+                LOG.error("Response Body : {}", objectMapper.readTree(cachingResponse.getContentAsByteArray()));
             }
         }
     }
