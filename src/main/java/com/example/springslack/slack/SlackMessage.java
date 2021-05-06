@@ -1,5 +1,6 @@
 package com.example.springslack.slack;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

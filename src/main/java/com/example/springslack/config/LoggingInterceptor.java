@@ -20,34 +20,31 @@ import javax.servlet.http.HttpServletResponse;
 @Log4j2
 @RequiredArgsConstructor
 @Component
-public class LoggingInterceptor implements HandlerInterceptor, ApplicationListener<ContextRefreshedEvent> {
+public class LoggingInterceptor implements HandlerInterceptor {
 
     private final ObjectMapper objectMapper;
     private final SlackSender slackSender;
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info(request.getRequestURL());
+        slackSender.sendSlack("RequestURL: " + request.getRequestURL().toString());
         if (request.getClass().getName().contains("SecurityContextHolderAwareRequestWrapper")) {
             return;
         }
         final ContentCachingRequestWrapper cachingRequest = (ContentCachingRequestWrapper) request;
         final ContentCachingResponseWrapper cachingResponse = (ContentCachingResponseWrapper) response;
         if (cachingRequest.getContentType() != null && cachingRequest.getContentType().contains("application/json")) {
-            if (cachingRequest.getContentAsByteArray().length != 0){
+            if (cachingRequest.getContentAsByteArray().length != 0) {
+                slackSender.sendSlack("RequestBody: " + objectMapper.writeValueAsString(objectMapper.readTree(cachingRequest.getContentAsByteArray())));
                 log.info("Request Body : {}", objectMapper.readTree(cachingRequest.getContentAsByteArray()));
             }
         }
         if (cachingResponse.getContentType() != null && cachingResponse.getContentType().contains("application/json")) {
             if (cachingResponse.getContentAsByteArray().length != 0) {
+                slackSender.sendSlack("ResponseBody: " + objectMapper.writeValueAsString(objectMapper.readTree(cachingResponse.getContentAsByteArray())));
                 log.info("Response Body : {}", objectMapper.readTree(cachingResponse.getContentAsByteArray()));
             }
         }
-    }
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        
     }
 }
 
