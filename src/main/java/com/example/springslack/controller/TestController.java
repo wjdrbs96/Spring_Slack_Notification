@@ -13,6 +13,7 @@ public class TestController {
 
     @PostMapping("/")
     public TestDto test(@RequestBody TestDto testDto) {
+        System.out.println(testDto.toString());
         return testDto;
     }
 }
