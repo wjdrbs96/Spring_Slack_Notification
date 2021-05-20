@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * created by jg 2021/05/06
+ * created by jg 2021/05/20
  */
 @RequiredArgsConstructor
 @Configuration
