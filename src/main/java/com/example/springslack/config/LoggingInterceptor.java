@@ -26,9 +26,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
         final String requestMethod = request.getMethod();
 
         log.error("==============");
-        log.error("Request URL : " + request.getRequestURL() + "\n" + "Query String : " + request.getQueryString() +
-                " || Request Method : " + requestMethod);
-        log.error("==============");
+        log.error("Request URL : " + request.getRequestURL() + "\n" +
+                "Query String : " + request.getQueryString() + " || Request Method : " + requestMethod);
 
         if (requestMethod.equals("POST")) {
             final ContentCachingRequestWrapper cachingRequest = (ContentCachingRequestWrapper) request;
@@ -37,5 +36,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
             log.error(String.format("Request Body : %s", objectMapper.readTree(cachingRequest.getContentAsByteArray())));
             log.error(String.format("Response Body : %s", objectMapper.readTree(cachingResponse.getContentAsByteArray())));
         }
+
+        log.error("==============");
     }
 }
