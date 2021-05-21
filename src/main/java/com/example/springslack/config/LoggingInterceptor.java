@@ -23,17 +23,19 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        final String requestMethod = request.getMethod();
+
         log.error("==============");
-        log.error("Query String : " + request.getQueryString() + " || Request URL : " + request.getRequestURL() + " || Request Method : " + request.getMethod());
+        log.error("Request URL : " + request.getRequestURL() + "\n" + "Query String : " + request.getQueryString() +
+                " || Request Method : " + requestMethod);
         log.error("==============");
 
-        if (request.getMethod().equals("POST")) {
+        if (requestMethod.equals("POST")) {
             final ContentCachingRequestWrapper cachingRequest = (ContentCachingRequestWrapper) request;
             final ContentCachingResponseWrapper cachingResponse = (ContentCachingResponseWrapper) response;
-            log.error(
-                    String.format("Request Body : %s", objectMapper.readTree(cachingRequest.getContentAsByteArray())),
-                    String.format("Response Body : %s", objectMapper.readTree(cachingResponse.getContentAsByteArray()))
-            );
+
+            log.error(String.format("Request Body : %s", objectMapper.readTree(cachingRequest.getContentAsByteArray())));
+            log.error(String.format("Response Body : %s", objectMapper.readTree(cachingResponse.getContentAsByteArray())));
         }
     }
 }
